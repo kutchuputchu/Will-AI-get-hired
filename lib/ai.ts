@@ -190,7 +190,7 @@ function buildMockAnalysis(resumeText: string): ResumeAnalysis {
   const tools = detected.tools;
   const softSkills = detected.softSkills;
   const missingSkills = Array.from(
-    new Set(suggestedRoles.flatMap((role) => role.weaknesses).filter(Boolean))
+    new Set(suggestedRoles.flatMap((role: SuggestedRole) => role.weaknesses).filter(Boolean))
   ).slice(0, 5);
   const resumeScore = suggestedRoles.length
     ? Math.round(suggestedRoles.reduce((total, role) => total + role.score, 0) / suggestedRoles.length)
