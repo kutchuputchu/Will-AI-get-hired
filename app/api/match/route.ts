@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { matchJobs } from "@/lib/match";
+import { matchJobsWithAI } from "@/lib/job-match-ai";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { JobListing } from "@/types";
 
@@ -8,13 +8,24 @@ export async function POST(request: Request) {
     const body = await request.json();
     const resumeId = body.resumeId as string | undefined;
     const resumeSkills = body.resumeSkills as string[] | undefined;
+    const resumeText = body.resumeText as string | undefined;
     const jobs = body.jobs as JobListing[] | undefined;
+    const suggestedRoles = body.suggestedRoles as string[] | undefined;
+    const domain = body.domain as string | undefined;
 
-    if (!resumeId || !Array.isArray(resumeSkills) || !Array.isArray(jobs)) {
-      return NextResponse.json({ error: "resumeId, resumeSkills, and jobs are required." }, { status: 400 });
+    if (!resumeId || !resumeText || !Array.isArray(resumeSkills) || !Array.isArray(jobs)) {
+      return NextResponse.json(
+        { error: "resumeId, resumeText, resumeSkills, and jobs are required." },
+        { status: 400 }
+      );
     }
 
-    const matches = matchJobs(resumeSkills, jobs);
+    const matches = await matchJobsWithAI({
+      resumeText,
+      domain: domain ?? "",
+      suggestedRoles: Array.isArray(suggestedRoles) ? suggestedRoles : [],
+      jobs
+    });
     const supabase = getSupabaseAdmin();
 
     const rows = matches.map((job) => ({
@@ -33,14 +44,19 @@ export async function POST(request: Request) {
     const { error } = await supabase.from("job_matches").insert(rows);
 
     if (error) {
-      throw error;
+      return NextResponse.json(
+        {
+          error: `Database insert failed for table "job_matches": ${error.message}`
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(matches);
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unexpected matching error."
+        error: `Unexpected matching error: ${error instanceof Error ? error.message : "Unknown error."}`
       },
       { status: 500 }
     );

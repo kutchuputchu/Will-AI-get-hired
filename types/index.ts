@@ -6,6 +6,18 @@ export type ResumeUploadResponse = {
 };
 
 export type ResumeAnalysis = {
+  domain: string;
+  suggestedRoles: {
+    role: string;
+    score: number;
+    strengths: string[];
+    weaknesses: string[];
+    improvements: string[];
+  }[];
+  experience: string[];
+  education: string[];
+  tools: string[];
+  softSkills: string[];
   summary: string;
   skills: string[];
   experienceLevel: string;
@@ -27,5 +39,21 @@ export type JobListing = {
 
 export type MatchedJob = JobListing & {
   matchPercentage: number;
+  matchedSkills: string[];
   missingSkills: string[];
+  strengths: string[];
+  gaps: string[];
+  explanation?: string;
+  improvements?: string[];
+  plan30Days?: {
+    week1: string;
+    week2: string;
+    week3: string;
+    week4: string;
+  };
+  betterAlternative?: {
+    betterRole: string;
+    reason: string;
+  };
+  resumeFixes?: string[];
 };

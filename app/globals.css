@@ -4,29 +4,144 @@
 
 :root {
   color-scheme: light;
+  --background: #f7f8fc;
+  --background-strong: #ffffff;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --line: rgba(148, 163, 184, 0.2);
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --brand-soft: rgba(37, 99, 235, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+  font-family: "Aptos", "SF Pro Display", "Segoe UI", "Helvetica Neue", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-  color: #0f172a;
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%),
+    radial-gradient(circle at 85% 10%, rgba(15, 23, 42, 0.06), transparent 20%),
+    linear-gradient(180deg, #f8fafc 0%, #f7f8fc 45%, #eef4ff 100%);
+  color: var(--foreground);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.65) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.65) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 80%);
+  opacity: 0.28;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.72;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.surface {
+  /* Shared glassy container used across hero and cards for a consistent SaaS surface. */
+  @apply rounded-[2rem] border border-white/70 bg-white/80 shadow-card backdrop-blur-xl;
 }
 
 .card {
-  @apply rounded-3xl border border-white/70 bg-white/85 p-6 shadow-card backdrop-blur;
+  @apply surface p-6 md:p-7;
+}
+
+.section-title {
+  @apply text-xl font-semibold tracking-tight text-slate-950 md:text-2xl;
+}
+
+.section-copy {
+  @apply mt-2 text-sm leading-6 text-slate-500;
 }
 
 .field {
-  @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20;
+  @apply w-full rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-3.5 text-sm text-slate-700 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100;
 }
 
 .button-primary {
-  @apply inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-[0_10px_24px_rgba(37,99,235,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-[0_18px_32px_rgba(37,99,235,0.22)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none;
 }
 
 .button-secondary {
-  @apply inline-flex items-center justify-center rounded-2xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3.5 font-semibold text-slate-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50;
+}
+
+.badge {
+  @apply inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-600 backdrop-blur;
+}
+
+.stat-card {
+  @apply rounded-3xl border border-slate-200/70 bg-white/85 p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.chip {
+  @apply rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  animation: spin 0.75s linear infinite;
+}
+
+.animate-float-in {
+  /* Light entrance motion keeps the page feeling polished without affecting functionality. */
+  animation: float-in 0.65s ease-out both;
+}
+
+.pulse-ring {
+  animation: pulse-ring 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
