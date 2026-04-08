@@ -11,42 +11,30 @@ export function matchJobs(
   return jobs
     .map((job) => {
       const requiredSkills = job.skills.map(normalize);
-
       const matchedSkills = requiredSkills.filter((skill) =>
         normalizedResumeSkills.includes(skill)
       );
-
       const missingSkills = requiredSkills.filter(
         (skill) => !normalizedResumeSkills.includes(skill)
       );
-
       const matchedCount = matchedSkills.length;
       const total = requiredSkills.length || 1;
-
       const haystack = `${job.title} ${job.description}`.toLowerCase();
-
-      const roleBonus = normalizedRoles.some((role) =>
-        haystack.includes(role)
-      )
-        ? 20
-        : 0;
-
+      const roleAligned = normalizedRoles.some((role) => haystack.includes(role));
+      const roleBonus = roleAligned ? 20 : 0;
       const baseScore = Math.round((matchedCount / total) * 100);
+      const matchPercentage = Math.min(100, Math.max(baseScore, baseScore + roleBonus));
 
       return {
         ...job,
-
-        matchPercentage: Math.min(
-          100,
-          Math.max(baseScore, baseScore + roleBonus)
-        ),
-
-        matchedSkills, // ✅ real data
+        matchPercentage,
+        matchedSkills,
         missingSkills,
-
-        strengths: [], // ✅ required by type
-        gaps: [], // ✅ required by type
-        explanation: "", // ✅ safe default
+        strengths: roleAligned ? ["Strong role alignment"] : ["Relevant skill overlap"],
+        gaps: missingSkills,
+        explanation: roleAligned
+          ? "Strong role alignment and relevant skills."
+          : "Partial skill match with some missing requirements."
       };
     })
     .sort((a, b) => b.matchPercentage - a.matchPercentage);
