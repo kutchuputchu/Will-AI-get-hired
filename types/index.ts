@@ -1,3 +1,11 @@
+export type SuggestedRole = {
+  role: string;
+  score: number;
+  strengths: string[];
+  weaknesses: string[];
+  improvements: string[];
+};
+
 export type ResumeUploadResponse = {
   resumeId: string;
   fileName: string;
@@ -7,13 +15,7 @@ export type ResumeUploadResponse = {
 
 export type ResumeAnalysis = {
   domain: string;
-  suggestedRoles: {
-    role: string;
-    score: number;
-    strengths: string[];
-    weaknesses: string[];
-    improvements: string[];
-  }[];
+  suggestedRoles: SuggestedRole[];
   experience: string[];
   education: string[];
   tools: string[];

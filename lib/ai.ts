@@ -1,4 +1,4 @@
-import { ResumeAnalysis } from "@/types";
+import { ResumeAnalysis, SuggestedRole } from "@/types";
 
 type ClaudeResponse = {
   content?: Array<{ type: string; text?: string }>;
@@ -224,7 +224,7 @@ function detectExperienceYears(text: string) {
 function normalizeAnalysis(parsed: any, resumeText: string): ResumeAnalysis {
   const fallback = buildMockAnalysis(resumeText);
   const extracted = parsed?.extracted_information ?? {};
-  const suggestedRoles = Array.isArray(parsed?.suggested_roles)
+  const suggestedRoles: SuggestedRole[] = Array.isArray(parsed?.suggested_roles)
     ? parsed.suggested_roles
         .map((role: any) => ({
           role: String(role?.role ?? "").trim(),
@@ -233,7 +233,7 @@ function normalizeAnalysis(parsed: any, resumeText: string): ResumeAnalysis {
           weaknesses: normalizeStringArray(role?.weaknesses),
           improvements: normalizeStringArray(role?.improvements)
         }))
-        .filter((role: { role: string }) => role.role)
+        .filter((role: SuggestedRole) => role.role)
     : fallback.suggestedRoles;
 
   const skills = normalizeStringArray(extracted.skills);
@@ -289,7 +289,7 @@ function toClampedScore(value: unknown) {
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
-function buildSummary(domain: string, suggestedRoles: Array<{ role: string; score: number }>) {
+function buildSummary(domain: string, suggestedRoles: SuggestedRole[]) {
   if (!suggestedRoles.length) {
     return "";
   }
