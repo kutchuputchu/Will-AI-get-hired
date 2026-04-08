@@ -10,31 +10,39 @@ export function matchJobs(
 
   return jobs
     .map((job) => {
-      const requiredSkills = job.skills.map(normalize);
-      const matchedSkills = requiredSkills.filter((skill) =>
-        normalizedResumeSkills.includes(skill)
+      // We normalize for the comparison, but keep original strings for the UI
+      const matchedSkills = job.skills.filter((skill) =>
+        normalizedResumeSkills.includes(normalize(skill))
       );
-      const missingSkills = requiredSkills.filter(
-        (skill) => !normalizedResumeSkills.includes(skill)
+      
+      const missingSkills = job.skills.filter(
+        (skill) => !normalizedResumeSkills.includes(normalize(skill))
       );
+
       const matchedCount = matchedSkills.length;
-      const total = requiredSkills.length || 1;
+      const total = job.skills.length || 1;
+      
       const haystack = `${job.title} ${job.description}`.toLowerCase();
       const roleAligned = normalizedRoles.some((role) => haystack.includes(role));
+      
       const roleBonus = roleAligned ? 20 : 0;
       const baseScore = Math.round((matchedCount / total) * 100);
       const matchPercentage = Math.min(100, Math.max(baseScore, baseScore + roleBonus));
 
+      // Ensure every property required by MatchedJob is present
       return {
         ...job,
         matchPercentage,
-        matchedSkills,
+        matchedSkills, 
         missingSkills,
         strengths: roleAligned ? ["Strong role alignment"] : ["Relevant skill overlap"],
         gaps: missingSkills,
         explanation: roleAligned
           ? "Strong role alignment and relevant skills."
-          : "Partial skill match with some missing requirements."
+          : "Partial skill match with some missing requirements.",
+        // Providing empty defaults for optional AI-driven fields to satisfy strict types if necessary
+        improvements: [],
+        resumeFixes: []
       };
     })
     .sort((a, b) => b.matchPercentage - a.matchPercentage);
