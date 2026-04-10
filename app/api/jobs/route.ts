@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchRelevantJobs } from "@/lib/jobs";
+import { fetchCachedLiveJobs } from "@/lib/resume-vibe/jobs-live";
 
 export async function GET(request: Request) {
   try {
@@ -7,6 +7,8 @@ export async function GET(request: Request) {
     const skillsParam = searchParams.get("skills");
     const domain = searchParams.get("domain") ?? "";
     const rolesParam = searchParams.get("roles") ?? "";
+    const location = searchParams.get("location") ?? "Indore";
+    const remote = searchParams.get("remote") === "true";
 
     if (!skillsParam) {
       return NextResponse.json({ error: "skills query parameter is required." }, { status: 400 });
@@ -26,8 +28,8 @@ export async function GET(request: Request) {
       .map((role) => role.trim())
       .filter(Boolean);
 
-    const jobs = await fetchRelevantJobs(skills, { domain, roles });
-    return NextResponse.json(jobs);
+    const result = await fetchCachedLiveJobs({ skills, domain, roles, location, remote });
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       {

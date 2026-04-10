@@ -4,14 +4,14 @@
 
 :root {
   color-scheme: light;
-  --background: #f7f8fc;
+  --background: #f4f7f7;
   --background-strong: #ffffff;
   --foreground: #0f172a;
   --muted: #64748b;
   --line: rgba(148, 163, 184, 0.2);
-  --brand: #2563eb;
-  --brand-strong: #1d4ed8;
-  --brand-soft: rgba(37, 99, 235, 0.08);
+  --brand: #0d9488;
+  --brand-strong: #0f766e;
+  --brand-soft: rgba(13, 148, 136, 0.08);
 }
 
 html {
@@ -20,11 +20,11 @@ html {
 
 body {
   min-height: 100vh;
-  font-family: "Aptos", "SF Pro Display", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: "Sora", "Aptos", "SF Pro Display", "Segoe UI", "Helvetica Neue", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%),
+    radial-gradient(circle at top left, rgba(13, 148, 136, 0.12), transparent 24%),
     radial-gradient(circle at 85% 10%, rgba(15, 23, 42, 0.06), transparent 20%),
-    linear-gradient(180deg, #f8fafc 0%, #f7f8fc 45%, #eef4ff 100%);
+    linear-gradient(180deg, #f8fafc 0%, #f4f7f7 45%, #ecfeff 100%);
   color: var(--foreground);
 }
 
@@ -42,7 +42,7 @@ body::before {
 }
 
 ::selection {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(13, 148, 136, 0.18);
 }
 
 @keyframes float-in {
@@ -92,11 +92,11 @@ body::before {
 }
 
 .field {
-  @apply w-full rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-3.5 text-sm text-slate-700 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-100;
+  @apply w-full rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-3.5 text-sm text-slate-700 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 focus:border-teal-400 focus:ring-4 focus:ring-teal-100;
 }
 
 .button-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3.5 font-semibold text-white shadow-[0_10px_24px_rgba(37,99,235,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-[0_18px_32px_rgba(37,99,235,0.22)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 py-3.5 font-semibold text-white shadow-[0_10px_24px_rgba(13,148,136,0.25)] transition duration-200 hover:-translate-y-0.5 hover:bg-teal-500 hover:shadow-[0_18px_32px_rgba(13,148,136,0.22)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none;
 }
 
 .button-secondary {
@@ -122,6 +122,201 @@ body::before {
   border: 2px solid rgba(255, 255, 255, 0.35);
   border-top-color: white;
   animation: spin 0.75s linear infinite;
+}
+
+.glass-panel {
+  @apply rounded-[28px] border border-white/70 bg-white/70 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl;
+}
+
+.resumevibe-shell {
+  @apply overflow-hidden rounded-[36px] border border-white/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(15,23,42,0.94))] shadow-[0_40px_130px_rgba(15,23,42,0.22)];
+}
+
+.resumevibe-nav-pill {
+  @apply rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10;
+}
+
+.resumevibe-sidebar {
+  @apply space-y-4 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(30,41,59,0.96))] p-4 shadow-[0_24px_90px_rgba(15,23,42,0.22)];
+}
+
+.resumevibe-sidebar-panel {
+  @apply rounded-[28px] bg-white/5 p-4;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.resumevibe-sidebar-link {
+  @apply flex items-center gap-3 rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-slate-300 transition hover:border-white/10 hover:bg-white/5 hover:text-white;
+}
+
+.resumevibe-sidebar-link-active {
+  @apply flex items-center gap-3 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(34,211,238,0.16)];
+}
+
+.resumevibe-hero {
+  @apply relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.94))] px-6 py-10 shadow-[0_30px_120px_rgba(15,23,42,0.24)] sm:px-8 lg:px-10;
+}
+
+.resumevibe-badge {
+  @apply inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200 backdrop-blur;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.resumevibe-hero-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-400 px-5 py-3.5 font-semibold text-slate-950 shadow-[0_18px_45px_rgba(34,211,238,0.22)] transition hover:-translate-y-0.5 hover:bg-cyan-300;
+}
+
+.resumevibe-hero-secondary {
+  @apply inline-flex items-center justify-center rounded-2xl bg-white/10 px-5 py-3.5 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.resumevibe-stat {
+  @apply rounded-[26px] border border-white/10 bg-white/10 p-4 backdrop-blur;
+}
+
+.resumevibe-hero-card {
+  @apply rounded-[28px] border border-white/10 bg-white/10 p-5 backdrop-blur;
+}
+
+.resumevibe-hero-step {
+  @apply flex items-start gap-3 rounded-2xl bg-white/5 px-4 py-3;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.resumevibe-hero-step-number {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-xs font-semibold text-white;
+}
+
+.resumevibe-quote {
+  @apply rounded-[24px] border border-white/10 bg-white/10 px-4 py-4 text-sm text-slate-200 backdrop-blur;
+}
+
+.resumevibe-panel {
+  @apply rounded-[32px] border border-white/70 p-6 shadow-[0_28px_100px_rgba(15,23,42,0.08)] backdrop-blur-xl;
+  background-color: rgba(255, 255, 255, 0.82);
+}
+
+.resumevibe-soft-card {
+  @apply border border-white/80 shadow-[0_20px_60px_rgba(15,23,42,0.06)];
+  background-color: rgba(255, 255, 255, 0.78);
+}
+
+.resumevibe-section-kicker {
+  @apply text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600;
+}
+
+.resumevibe-upload-zone {
+  @apply flex cursor-pointer flex-col items-center justify-center rounded-[30px] border border-dashed border-slate-300 bg-[linear-gradient(180deg,rgba(248,250,252,0.95),rgba(240,249,255,0.95))] px-6 py-12 text-center transition hover:-translate-y-0.5 hover:border-cyan-400 hover:shadow-[0_24px_60px_rgba(34,211,238,0.12)];
+}
+
+.resumevibe-upload-icon {
+  @apply flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-cyan-600 shadow-[0_16px_40px_rgba(15,23,42,0.08)];
+}
+
+.resumevibe-preview-panel {
+  @apply rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.98),rgba(30,41,59,0.96))] p-5 text-white shadow-[0_24px_80px_rgba(15,23,42,0.2)];
+}
+
+.resumevibe-preview-row {
+  @apply flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.resumevibe-preview-number {
+  @apply flex h-8 w-8 items-center justify-center rounded-2xl bg-white/10 text-xs font-semibold text-white;
+}
+
+.resumevibe-step-row {
+  @apply flex items-center gap-4 rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-step-dot {
+  @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-sm font-semibold text-cyan-700;
+}
+
+.resumevibe-cooking-icon {
+  @apply flex h-16 w-16 items-center justify-center rounded-[24px] bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(249,115,22,0.12))] text-cyan-700 shadow-[0_16px_40px_rgba(34,211,238,0.18)];
+}
+
+.resumevibe-chip-card {
+  @apply rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600;
+}
+
+.resumevibe-job-card {
+  @apply rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))] p-5 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_24px_70px_rgba(34,211,238,0.08)];
+}
+
+.resumevibe-logo-pill {
+  @apply flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(34,211,238,0.16),rgba(99,102,241,0.12))] text-sm font-semibold text-slate-800;
+}
+
+.resumevibe-inline-pill {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600;
+}
+
+.resumevibe-skill-pill {
+  @apply rounded-full border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-xs font-medium text-cyan-800 transition hover:bg-cyan-100;
+}
+
+.resumevibe-match-ring {
+  @apply relative flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-[0_10px_30px_rgba(15,23,42,0.08)];
+}
+
+.resumevibe-details {
+  @apply mt-5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
+}
+
+.resumevibe-details summary {
+  @apply cursor-pointer font-semibold text-slate-900;
+}
+
+.resumevibe-role-row {
+  @apply flex items-start justify-between gap-4 rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-gap-card {
+  @apply rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-resource-pill {
+  @apply rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-cyan-200 hover:text-cyan-700;
+}
+
+.resumevibe-compare-card {
+  @apply rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-compare-card-accent {
+  @apply border-cyan-100 bg-cyan-50/70;
+}
+
+.resumevibe-interview-card {
+  @apply rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-tracker-row {
+  @apply flex items-center justify-between gap-4 rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-portfolio-hero {
+  @apply rounded-[28px] border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.95))] px-6 py-8 shadow-[0_22px_70px_rgba(15,23,42,0.18)];
+}
+
+.resumevibe-portfolio-card {
+  @apply rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4;
+}
+
+.resumevibe-preview-card {
+  @apply rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-5 text-sm leading-7 text-slate-700;
+}
+
+.resumevibe-skeleton-row {
+  @apply flex items-center gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3;
+}
+
+.resumevibe-skeleton-bar {
+  @apply h-2 w-16 rounded-full bg-[linear-gradient(90deg,rgba(34,211,238,0.26),rgba(99,102,241,0.22),rgba(34,211,238,0.26))];
 }
 
 .animate-float-in {

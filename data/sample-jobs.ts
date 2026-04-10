@@ -1,0 +1,561 @@
+import { ApplicationTrackerItem, InterviewQuestion, JobListing, SkillGapInsight } from "@/types";
+
+const aiJobs: JobListing[] = [
+  {
+    adzunaId: "ai-001",
+    slug: "ai-ml-engineer-rag",
+    title: "AI/ML Engineer - RAG Systems",
+    company: "NovaPilot AI",
+    companyLogo: "NP",
+    location: "Remote",
+    description: "Build production RAG systems, agent workflows, evaluation pipelines, and FastAPI services for enterprise copilots.",
+    applyUrl: "https://example.com/jobs/ai-ml-engineer-rag",
+    salaryMin: 1800000,
+    salaryMax: 2800000,
+    skills: ["python", "rag", "langchain", "fastapi", "vector databases", "docker"],
+    domain: "AI / ML",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ai-002",
+    slug: "llm-platform-engineer",
+    title: "LLM Platform Engineer",
+    company: "VibeStack",
+    companyLogo: "VS",
+    location: "Bangalore / Hybrid",
+    description: "Own prompt pipelines, inference tooling, model routing, and observability for large language model applications.",
+    applyUrl: "https://example.com/jobs/llm-platform-engineer",
+    salaryMin: 2200000,
+    salaryMax: 3200000,
+    skills: ["python", "llmops", "docker", "aws", "langsmith", "postgresql"],
+    domain: "AI / ML",
+    level: "senior",
+    easyApply: false
+  },
+  {
+    adzunaId: "ai-003",
+    slug: "generative-ai-engineer",
+    title: "Generative AI Engineer",
+    company: "PromptGrid",
+    companyLogo: "PG",
+    location: "Remote",
+    description: "Develop agentic products with tool use, multi-step reasoning, structured outputs, and evaluation loops.",
+    applyUrl: "https://example.com/jobs/generative-ai-engineer",
+    salaryMin: 1600000,
+    salaryMax: 2600000,
+    skills: ["python", "agents", "langgraph", "groq", "openai", "prompt engineering"],
+    domain: "AI / ML",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ai-004",
+    slug: "applied-scientist-llms",
+    title: "Applied Scientist - LLMs",
+    company: "ModelForge Labs",
+    companyLogo: "MF",
+    location: "Pune",
+    description: "Train, fine-tune, and evaluate instruction-following models with strong experimentation discipline.",
+    applyUrl: "https://example.com/jobs/applied-scientist-llms",
+    salaryMin: 2400000,
+    salaryMax: 3600000,
+    skills: ["pytorch", "transformers", "evaluation", "python", "llm fine-tuning", "mlflow"],
+    domain: "AI / ML",
+    level: "senior",
+    easyApply: false
+  },
+  {
+    adzunaId: "ai-005",
+    slug: "mlops-engineer",
+    title: "MLOps Engineer",
+    company: "ScaleNeuron",
+    companyLogo: "SN",
+    location: "Remote / Hybrid",
+    description: "Ship model serving, CI/CD, feature pipelines, and deployment automation for AI products at scale.",
+    applyUrl: "https://example.com/jobs/mlops-engineer",
+    salaryMin: 1700000,
+    salaryMax: 2600000,
+    skills: ["docker", "kubernetes", "aws", "python", "fastapi", "monitoring"],
+    domain: "AI / ML",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ai-006",
+    slug: "nlp-engineer",
+    title: "NLP Engineer",
+    company: "LexiCore",
+    companyLogo: "LC",
+    location: "Remote",
+    description: "Design retrieval, ranking, and text understanding workflows for customer intelligence platforms.",
+    applyUrl: "https://example.com/jobs/nlp-engineer",
+    salaryMin: 1500000,
+    salaryMax: 2300000,
+    skills: ["python", "nlp", "spacy", "huggingface", "retrieval", "sql"],
+    domain: "AI / ML",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ai-007",
+    slug: "agent-engineer",
+    title: "Agent Engineer",
+    company: "TaskPilot",
+    companyLogo: "TP",
+    location: "Indore / Remote",
+    description: "Build robust autonomous workflows with tool execution, retries, tracing, and cost-aware orchestration.",
+    applyUrl: "https://example.com/jobs/agent-engineer",
+    salaryMin: 1400000,
+    salaryMax: 2400000,
+    skills: ["python", "agents", "crewai", "langgraph", "fastapi", "redis"],
+    domain: "AI / ML",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "ai-008",
+    slug: "ai-backend-engineer",
+    title: "AI Backend Engineer",
+    company: "Orbit Intelligence",
+    companyLogo: "OI",
+    location: "Remote",
+    description: "Develop APIs and backend infrastructure that power LLM features, evaluation, and secure enterprise integrations.",
+    applyUrl: "https://example.com/jobs/ai-backend-engineer",
+    salaryMin: 1800000,
+    salaryMax: 2900000,
+    skills: ["fastapi", "postgresql", "python", "docker", "oauth", "supabase"],
+    domain: "AI / ML",
+    level: "mid",
+    easyApply: false
+  },
+  {
+    adzunaId: "ai-009",
+    slug: "ml-engineer-vision-language",
+    title: "ML Engineer - Vision & Language",
+    company: "AtlasAI",
+    companyLogo: "AA",
+    location: "Hyderabad",
+    description: "Work on multimodal systems, embeddings, document understanding, and inference optimization.",
+    applyUrl: "https://example.com/jobs/ml-engineer-vision-language",
+    salaryMin: 2100000,
+    salaryMax: 3000000,
+    skills: ["python", "pytorch", "embeddings", "document ai", "huggingface", "docker"],
+    domain: "AI / ML",
+    level: "senior",
+    easyApply: false
+  },
+  {
+    adzunaId: "ai-010",
+    slug: "prompt-engineer",
+    title: "Prompt Engineer",
+    company: "SignalFlow AI",
+    companyLogo: "SF",
+    location: "Remote",
+    description: "Create prompt libraries, structured evaluation suites, and workflow improvements for enterprise assistants.",
+    applyUrl: "https://example.com/jobs/prompt-engineer",
+    salaryMin: 1200000,
+    salaryMax: 2000000,
+    skills: ["prompt engineering", "evaluation", "structured outputs", "python", "analysis"],
+    domain: "AI / ML",
+    level: "entry",
+    easyApply: true
+  }
+];
+
+const backendJobs: JobListing[] = [
+  {
+    adzunaId: "be-001",
+    slug: "backend-engineer-fastapi",
+    title: "Backend Engineer - FastAPI",
+    company: "APICraft",
+    companyLogo: "AC",
+    location: "Remote",
+    description: "Design scalable backend APIs, authentication flows, and async processing services using FastAPI and PostgreSQL.",
+    applyUrl: "https://example.com/jobs/backend-engineer-fastapi",
+    salaryMin: 1400000,
+    salaryMax: 2300000,
+    skills: ["python", "fastapi", "postgresql", "docker", "redis", "jwt"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-002",
+    slug: "platform-backend-developer",
+    title: "Platform Backend Developer",
+    company: "RenderLoop",
+    companyLogo: "RL",
+    location: "Bangalore / Hybrid",
+    description: "Own services, queue workers, observability, and deployment automation for customer-facing backend systems.",
+    applyUrl: "https://example.com/jobs/platform-backend-developer",
+    salaryMin: 1500000,
+    salaryMax: 2500000,
+    skills: ["python", "docker", "postgresql", "aws", "monitoring", "ci/cd"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: false
+  },
+  {
+    adzunaId: "be-003",
+    slug: "software-developer-backend",
+    title: "Software Developer - Backend",
+    company: "CoreLedger",
+    companyLogo: "CL",
+    location: "Indore",
+    description: "Build robust business logic, data models, and internal APIs with strong engineering quality and documentation.",
+    applyUrl: "https://example.com/jobs/software-developer-backend",
+    salaryMin: 1000000,
+    salaryMax: 1800000,
+    skills: ["python", "sql", "rest api", "docker", "git", "testing"],
+    domain: "Software Engineering",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-004",
+    slug: "integration-engineer",
+    title: "Integration Engineer",
+    company: "ConnectNest",
+    companyLogo: "CN",
+    location: "Remote",
+    description: "Deliver production integrations with CRMs, auth providers, file systems, and job ingestion pipelines.",
+    applyUrl: "https://example.com/jobs/integration-engineer",
+    salaryMin: 1200000,
+    salaryMax: 2100000,
+    skills: ["api integration", "python", "oauth", "webhooks", "postgresql", "docker"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-005",
+    slug: "devops-oriented-backend-engineer",
+    title: "DevOps-Oriented Backend Engineer",
+    company: "PulseInfra",
+    companyLogo: "PI",
+    location: "Remote",
+    description: "Combine backend delivery with infra automation, containerization, and service reliability engineering.",
+    applyUrl: "https://example.com/jobs/devops-oriented-backend-engineer",
+    salaryMin: 1800000,
+    salaryMax: 2700000,
+    skills: ["python", "docker", "kubernetes", "aws", "linux", "postgresql"],
+    domain: "Software Engineering",
+    level: "senior",
+    easyApply: false
+  },
+  {
+    adzunaId: "be-006",
+    slug: "llm-tools-backend-developer",
+    title: "LLM Tools Backend Developer",
+    company: "ForgeOps",
+    companyLogo: "FO",
+    location: "Remote / Hybrid",
+    description: "Ship backend services that connect agent tools, databases, and evaluation systems for AI products.",
+    applyUrl: "https://example.com/jobs/llm-tools-backend-developer",
+    salaryMin: 1700000,
+    salaryMax: 2600000,
+    skills: ["python", "fastapi", "postgresql", "docker", "openai", "langchain"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-007",
+    slug: "api-reliability-engineer",
+    title: "API Reliability Engineer",
+    company: "TrustLayer",
+    companyLogo: "TL",
+    location: "Pune",
+    description: "Improve latency, resilience, and service correctness for customer-critical API systems.",
+    applyUrl: "https://example.com/jobs/api-reliability-engineer",
+    salaryMin: 1600000,
+    salaryMax: 2500000,
+    skills: ["python", "monitoring", "testing", "rest api", "postgresql", "docker"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: false
+  },
+  {
+    adzunaId: "be-008",
+    slug: "fastapi-consultant",
+    title: "FastAPI Consultant",
+    company: "ByteConsult",
+    companyLogo: "BC",
+    location: "Remote",
+    description: "Help startups modernize Python services with FastAPI, async patterns, and container-based delivery.",
+    applyUrl: "https://example.com/jobs/fastapi-consultant",
+    salaryMin: 1300000,
+    salaryMax: 2100000,
+    skills: ["python", "fastapi", "docker", "sql", "git", "api design"],
+    domain: "Software Engineering",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-009",
+    slug: "data-api-engineer",
+    title: "Data API Engineer",
+    company: "MapLine Data",
+    companyLogo: "MD",
+    location: "Remote",
+    description: "Expose reliable analytics and ETL outputs through APIs and scheduled jobs for internal and customer apps.",
+    applyUrl: "https://example.com/jobs/data-api-engineer",
+    salaryMin: 1400000,
+    salaryMax: 2200000,
+    skills: ["python", "sql", "etl", "postgresql", "docker", "api development"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "be-010",
+    slug: "production-python-engineer",
+    title: "Production Python Engineer",
+    company: "RelayCore",
+    companyLogo: "RC",
+    location: "Hyderabad / Hybrid",
+    description: "Work on backend product features, background workers, service integrations, and deployment pipelines.",
+    applyUrl: "https://example.com/jobs/production-python-engineer",
+    salaryMin: 1500000,
+    salaryMax: 2400000,
+    skills: ["python", "postgresql", "docker", "redis", "testing", "ci/cd"],
+    domain: "Software Engineering",
+    level: "mid",
+    easyApply: false
+  }
+];
+
+const pharmaJobs: JobListing[] = [
+  {
+    adzunaId: "ph-001",
+    slug: "qc-analyst-stability",
+    title: "QC Analyst - Stability",
+    company: "Zenova Pharma",
+    companyLogo: "ZP",
+    location: "Ahmedabad",
+    description: "Handle stability testing, sample analysis, documentation, and cGMP-compliant quality control operations.",
+    applyUrl: "https://example.com/jobs/qc-analyst-stability",
+    salaryMin: 450000,
+    salaryMax: 750000,
+    skills: ["quality control", "stability", "hplc", "documentation", "gmp", "pharmaceutical analysis"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-002",
+    slug: "qa-executive-cgmp",
+    title: "QA Executive - cGMP",
+    company: "MedAxis Formulations",
+    companyLogo: "MF",
+    location: "Vadodara",
+    description: "Support QA documentation, SOP compliance, batch review, and internal audit readiness in a regulated facility.",
+    applyUrl: "https://example.com/jobs/qa-executive-cgmp",
+    salaryMin: 500000,
+    salaryMax: 800000,
+    skills: ["quality assurance", "cgmp", "documentation", "sop", "batch review", "compliance"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-003",
+    slug: "regulatory-affairs-associate",
+    title: "Regulatory Affairs Associate",
+    company: "Aurelia Therapeutics",
+    companyLogo: "AT",
+    location: "Mumbai",
+    description: "Prepare dossiers, support submissions, track compliance requirements, and coordinate regulatory updates.",
+    applyUrl: "https://example.com/jobs/regulatory-affairs-associate",
+    salaryMin: 550000,
+    salaryMax: 850000,
+    skills: ["regulatory compliance", "documentation", "submission support", "pharma regulations", "sop"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: false
+  },
+  {
+    adzunaId: "ph-004",
+    slug: "qc-microbiologist",
+    title: "QC Microbiologist",
+    company: "BioCrest Labs",
+    companyLogo: "BL",
+    location: "Pune",
+    description: "Perform microbiological analysis, environmental monitoring, and documentation within pharma quality systems.",
+    applyUrl: "https://example.com/jobs/qc-microbiologist",
+    salaryMin: 420000,
+    salaryMax: 700000,
+    skills: ["microbiology", "quality control", "documentation", "gmp", "environmental monitoring"],
+    domain: "Pharmaceuticals",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-005",
+    slug: "pharma-production-officer",
+    title: "Pharma Production Officer",
+    company: "Helio Drugs",
+    companyLogo: "HD",
+    location: "Indore",
+    description: "Coordinate production batches, maintain records, and ensure adherence to pharma manufacturing procedures.",
+    applyUrl: "https://example.com/jobs/pharma-production-officer",
+    salaryMin: 380000,
+    salaryMax: 650000,
+    skills: ["gmp", "batch record", "documentation", "production", "compliance"],
+    domain: "Pharmaceuticals",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-006",
+    slug: "analytical-chemist",
+    title: "Analytical Chemist",
+    company: "Ridgewell Sciences",
+    companyLogo: "RS",
+    location: "Hyderabad",
+    description: "Use analytical instruments and validated procedures to evaluate pharmaceutical samples and finished products.",
+    applyUrl: "https://example.com/jobs/analytical-chemist",
+    salaryMin: 500000,
+    salaryMax: 820000,
+    skills: ["hplc", "uv", "ftir", "documentation", "quality control", "validation"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: false
+  },
+  {
+    adzunaId: "ph-007",
+    slug: "validation-associate",
+    title: "Validation Associate",
+    company: "Zydex Bio",
+    companyLogo: "ZB",
+    location: "Ahmedabad",
+    description: "Prepare validation protocols and reports, execute studies, and maintain strong documentation in QA environments.",
+    applyUrl: "https://example.com/jobs/validation-associate",
+    salaryMin: 520000,
+    salaryMax: 880000,
+    skills: ["validation", "documentation", "protocols", "gmp", "quality assurance"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-008",
+    slug: "lab-documentation-specialist",
+    title: "Lab Documentation Specialist",
+    company: "Orchid Remedies",
+    companyLogo: "OR",
+    location: "Vadodara",
+    description: "Maintain laboratory records, SOP revisions, deviation notes, and compliance evidence across QC teams.",
+    applyUrl: "https://example.com/jobs/lab-documentation-specialist",
+    salaryMin: 360000,
+    salaryMax: 600000,
+    skills: ["documentation", "sop", "deviation", "quality systems", "gmp"],
+    domain: "Pharmaceuticals",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-009",
+    slug: "qc-officer-finished-products",
+    title: "QC Officer - Finished Products",
+    company: "Aegis Formulations",
+    companyLogo: "AF",
+    location: "Baddi",
+    description: "Inspect finished product quality, support sample release, and maintain testing records with compliance discipline.",
+    applyUrl: "https://example.com/jobs/qc-officer-finished-products",
+    salaryMin: 430000,
+    salaryMax: 720000,
+    skills: ["quality control", "sample release", "documentation", "gmp", "testing"],
+    domain: "Pharmaceuticals",
+    level: "entry",
+    easyApply: true
+  },
+  {
+    adzunaId: "ph-010",
+    slug: "qa-audits-coordinator",
+    title: "QA Audits Coordinator",
+    company: "SterileNova",
+    companyLogo: "SN",
+    location: "Mumbai",
+    description: "Coordinate audit evidence, CAPA documentation, SOP readiness, and cross-team quality reporting.",
+    applyUrl: "https://example.com/jobs/qa-audits-coordinator",
+    salaryMin: 600000,
+    salaryMax: 920000,
+    skills: ["quality assurance", "audit", "capa", "documentation", "compliance"],
+    domain: "Pharmaceuticals",
+    level: "mid",
+    easyApply: false
+  }
+];
+
+export const sampleJobs = [...aiJobs, ...backendJobs, ...pharmaJobs];
+
+export const sampleTrackerItems: ApplicationTrackerItem[] = [
+  {
+    id: "trk-1",
+    company: "NovaPilot AI",
+    role: "AI/ML Engineer - RAG Systems",
+    status: "Applied",
+    appliedAt: "2026-04-02",
+    notes: "Follow up after recruiter screens resume."
+  },
+  {
+    id: "trk-2",
+    company: "APICraft",
+    role: "Backend Engineer - FastAPI",
+    status: "Interview",
+    appliedAt: "2026-03-28",
+    notes: "System design interview scheduled Friday."
+  },
+  {
+    id: "trk-3",
+    company: "Zenova Pharma",
+    role: "QC Analyst - Stability",
+    status: "In Review",
+    appliedAt: "2026-04-04",
+    notes: "Hiring team requested updated notice period."
+  }
+];
+
+export const sampleInterviewQuestions: InterviewQuestion[] = [
+  {
+    question: "How would you improve a resume-to-job matching pipeline over time?",
+    sampleAnswer: "I would add feedback loops from application outcomes, tune weighted features, and evaluate on recruiter-labeled examples."
+  },
+  {
+    question: "Tell me about a project where you improved efficiency or quality.",
+    sampleAnswer: "I would highlight the situation, the process change I made, the tools used, and the measurable impact."
+  },
+  {
+    question: "How do you prioritize learning when a role requires missing skills?",
+    sampleAnswer: "I focus on the highest-signal gaps first, build one small project, and document the result quickly."
+  }
+];
+
+export const sampleSkillGaps: SkillGapInsight[] = [
+  {
+    skill: "Docker",
+    demandPercentage: 82,
+    learningResources: [
+      { title: "Docker for Developers", provider: "Docker", url: "https://docs.docker.com/get-started/" },
+      { title: "Containerized FastAPI Guide", provider: "FastAPI", url: "https://fastapi.tiangolo.com/deployment/docker/" }
+    ]
+  },
+  {
+    skill: "AWS",
+    demandPercentage: 67,
+    learningResources: [
+      { title: "AWS Skill Builder", provider: "AWS", url: "https://explore.skillbuilder.aws/" },
+      { title: "Deploy APIs on AWS", provider: "AWS", url: "https://aws.amazon.com/getting-started/" }
+    ]
+  },
+  {
+    skill: "CrewAI",
+    demandPercentage: 41,
+    learningResources: [
+      { title: "CrewAI Docs", provider: "CrewAI", url: "https://docs.crewai.com/" },
+      { title: "Agent Workflows Primer", provider: "GitHub", url: "https://github.com/crewAIInc/crewAI" }
+    ]
+  }
+];

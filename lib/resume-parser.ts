@@ -19,5 +19,11 @@ export async function extractResumeText(file: File) {
 }
 
 function cleanText(text: string) {
-  return text.replace(/\s+/g, " ").trim();
+  return text
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join("\n")
+    .trim();
 }

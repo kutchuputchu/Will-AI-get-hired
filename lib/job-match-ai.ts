@@ -5,6 +5,7 @@ type MatchAiInput = {
   domain: string;
   suggestedRoles: string[];
   jobs: JobListing[];
+  structuredResume?: Record<string, unknown>;
 };
 
 type ClaudeResponse = {
@@ -27,37 +28,14 @@ export async function matchJobsWithAI(input: MatchAiInput): Promise<MatchedJob[]
 }
 
 async function matchWithClaude(apiKey: string, input: MatchAiInput) {
+  const aiMatches = await batchMatchWithClaude(apiKey, input);
   const matches: MatchedJob[] = [];
 
   for (const job of input.jobs) {
-    const prompt = buildMatchPrompt(input.resumeText, job, input.suggestedRoles, input.domain);
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 500,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Claude matching request failed: ${errorText}`);
-    }
-
-    const data = (await response.json()) as ClaudeResponse;
-    const text = data.content?.find((item) => item.type === "text")?.text;
-
-    if (!text) {
-      throw new Error("Claude returned an empty matching response.");
-    }
-
-    const normalizedMatch = normalizeMatchResult(job, safeJsonParse(text));
+    const normalizedMatch = normalizeMatchResult(
+      job,
+      aiMatches.find((item: { job_id?: string; title?: string }) => item.job_id === job.adzunaId || item.title === job.title)
+    );
     normalizedMatch.improvements = await generateImprovementsWithClaude(
       apiKey,
       input.resumeText,
@@ -85,49 +63,14 @@ async function matchWithClaude(apiKey: string, input: MatchAiInput) {
 }
 
 async function matchWithGroq(apiKey: string, input: MatchAiInput) {
+  const aiMatches = await batchMatchWithGroq(apiKey, input);
   const matches: MatchedJob[] = [];
 
   for (const job of input.jobs) {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-20b",
-        temperature: 0.2,
-        response_format: {
-          type: "json_object"
-        },
-        messages: [
-          {
-            role: "system",
-            content: "You are an ATS matching engine. Return valid JSON only."
-          },
-          {
-            role: "user",
-            content: buildMatchPrompt(input.resumeText, job, input.suggestedRoles, input.domain)
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Groq matching request failed: ${errorText}`);
-    }
-
-    const data = (await response.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
-    const text = data.choices?.[0]?.message?.content;
-
-    if (!text) {
-      throw new Error("Groq returned an empty matching response.");
-    }
-
-    const normalizedMatch = normalizeMatchResult(job, safeJsonParse(text));
+    const normalizedMatch = normalizeMatchResult(
+      job,
+      aiMatches.find((item: { job_id?: string; title?: string }) => item.job_id === job.adzunaId || item.title === job.title)
+    );
     normalizedMatch.improvements = await generateImprovementsWithGroq(
       apiKey,
       input.resumeText,
@@ -152,6 +95,77 @@ async function matchWithGroq(apiKey: string, input: MatchAiInput) {
   }
 
   return matches.sort((a, b) => b.matchPercentage - a.matchPercentage);
+}
+
+async function batchMatchWithClaude(apiKey: string, input: MatchAiInput) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1400,
+      messages: [{ role: "user", content: buildBatchMatchPrompt(input) }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Claude matching request failed: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as ClaudeResponse;
+  const text = data.content?.find((item) => item.type === "text")?.text;
+
+  if (!text) {
+    throw new Error("Claude returned an empty matching response.");
+  }
+
+  return safeJsonArrayParse(text);
+}
+
+async function batchMatchWithGroq(apiKey: string, input: MatchAiInput) {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: "openai/gpt-oss-20b",
+      temperature: 0.2,
+      response_format: {
+        type: "json_object"
+      },
+      messages: [
+        {
+          role: "system",
+          content: "You are an intelligent job matching system. Return valid JSON only."
+        },
+        {
+          role: "user",
+          content: buildBatchMatchPrompt(input)
+        }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Groq matching request failed: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const text = data.choices?.[0]?.message?.content;
+
+  if (!text) {
+    throw new Error("Groq returned an empty matching response.");
+  }
+
+  return safeJsonArrayParse(text);
 }
 
 function buildFallbackMatches(input: MatchAiInput): MatchedJob[] {
@@ -499,85 +513,65 @@ async function generateResumeFixesWithGroq(apiKey: string, resumeText: string, j
 function normalizeMatchResult(job: JobListing, parsed: any): MatchedJob {
   return {
     ...job,
-    matchPercentage: clampScore(parsed?.matchScore),
-    matchedSkills: normalizeStringArray(parsed?.matchedSkills),
-    missingSkills: normalizeStringArray(parsed?.missingSkills),
-    strengths: normalizeStringArray(parsed?.strengths),
-    gaps: normalizeStringArray(parsed?.gaps),
-    explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : ""
+    matchPercentage: clampScore(parsed?.match_score ?? parsed?.matchScore),
+    matchedSkills: normalizeStringArray(parsed?.matched_skills ?? parsed?.matchedSkills),
+    missingSkills: normalizeStringArray(parsed?.missing_skills ?? parsed?.missingSkills),
+    strengths: normalizeStringArray(parsed?.matched_skills ?? parsed?.strengths),
+    gaps: normalizeStringArray(parsed?.missing_skills ?? parsed?.gaps),
+    explanation:
+      typeof parsed?.reason === "string"
+        ? parsed.reason.trim()
+        : typeof parsed?.explanation === "string"
+          ? parsed.explanation.trim()
+          : ""
   };
 }
 
-function buildMatchPrompt(resumeText: string, job: JobListing, suggestedRoles: string[], domain: string) {
+function buildBatchMatchPrompt(input: MatchAiInput) {
   return `
-You are an advanced ATS (Applicant Tracking System) and career intelligence engine.
+You are an intelligent job matching system.
 
-Your task is to evaluate how well a candidate matches a specific job.
-
-INPUT:
-- Resume data
-- Job title
-- Job description
-- Suggested roles (from prior analysis)
-- Candidate domain
-
-STEP 1 - Extract:
-- key required skills from job
-- important domain knowledge
-- experience level signals
-
-STEP 2 - Compare with candidate:
-- skill overlap
-- domain relevance
-- alignment with suggested roles
-- missing critical requirements
-
-STEP 3 - Score the match:
-
-Return a match score from 0 to 100 based on:
-- Skills match (40%)
-- Role alignment (30%)
-- Domain match (20%)
-- Experience relevance (10%)
-
-STEP 4 - Generate SHORT explanation:
+Match a candidate with jobs based on deep understanding, not keyword matching.
 
 IMPORTANT:
-- Keep explanation under 20 words
-- Be direct, no fluff
-
-RETURN JSON:
-{
-  "matchScore": number,
-  "matchedSkills": [],
-  "missingSkills": [],
-  "strengths": [],
-  "gaps": [],
-  "explanation": ""
-}
-
-RULES:
-- Do NOT assume the candidate is a software engineer
-- Consider non-tech and domain-specific roles equally
-- Be realistic, not optimistic
+- Use skills, domain, and experience
+- Penalize irrelevant matches
+- Consider transferable skills
+- Avoid tech bias unless appropriate
 - Return JSON only
 
-DATA:
+Candidate:
+${JSON.stringify(input.structuredResume ?? {
+    domain: input.domain,
+    suggested_roles: input.suggestedRoles,
+    resume_text: input.resumeText
+  }, null, 2)}
 
-Resume:
-${resumeText}
+Jobs:
+${JSON.stringify(
+    input.jobs.map((job) => ({
+      job_id: job.adzunaId,
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      description: job.description,
+      skills: job.skills
+    })),
+    null,
+    2
+  )}
 
-Job Title:
-${job.title}
-
-Job Description:
-${job.description}
-
-Suggested Roles:
-${suggestedRoles.join(", ")}
-
-Candidate Domain:
-${domain}
+Return:
+[
+  {
+    "job_id": "",
+    "title": "",
+    "match_score": 0,
+    "matched_skills": [],
+    "missing_skills": [],
+    "reason": ""
+  }
+]
   `.trim();
 }
 
@@ -733,6 +727,27 @@ function safeJsonParse(raw: string) {
 
     if (!match) {
       throw new Error("Could not parse AI job match response.");
+    }
+
+    return JSON.parse(match[0]);
+  }
+}
+
+function safeJsonArrayParse(raw: string) {
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    if (Array.isArray(parsed?.matches)) {
+      return parsed.matches;
+    }
+    throw new Error("Could not parse AI job match array response.");
+  } catch {
+    const match = raw.match(/\[[\s\S]*\]/);
+
+    if (!match) {
+      throw new Error("Could not parse AI job match array response.");
     }
 
     return JSON.parse(match[0]);

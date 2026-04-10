@@ -252,6 +252,33 @@ function buildMockJobs(skills: string[], options: JobSearchOptions): JobListing[
     ];
   }
 
+  if (domain.includes("general") || domain.includes("professional") || domain.includes("administrative")) {
+    return [
+      {
+        adzunaId: "demo-general-1",
+        title: "Operations Associate",
+        company: "CoreBridge Services",
+        location: "Remote / Hybrid",
+        description: "Support daily coordination, documentation, reporting, and cross-team operations in a structured business environment.",
+        applyUrl: "https://example.com/jobs/operations-associate",
+        salaryMin: 25000,
+        salaryMax: 42000,
+        skills: uniqueTerms(["coordination", "documentation", "reporting", ...normalizedSkills.slice(0, 2)])
+      },
+      {
+        adzunaId: "demo-general-2",
+        title: "Administrative Executive",
+        company: "Northfield Group",
+        location: "Chennai",
+        description: "Manage office workflows, maintain records, support communication, and help teams stay organized and on schedule.",
+        applyUrl: "https://example.com/jobs/administrative-executive",
+        salaryMin: 22000,
+        salaryMax: 38000,
+        skills: uniqueTerms(["organization", "communication", "documentation", ...normalizedSkills.slice(0, 2)])
+      }
+    ];
+  }
+
   return [
     {
       adzunaId: "demo-tech-1",
@@ -291,6 +318,9 @@ function getDomainTerms(domain: string) {
   if (lower.includes("pharma")) return ["pharmaceutical", "quality control", "quality assurance"];
   if (lower.includes("customer")) return ["customer support", "customer success", "helpdesk"];
   if (lower.includes("business") || lower.includes("operations")) return ["business analyst", "operations", "reporting"];
+  if (lower.includes("general") || lower.includes("professional") || lower.includes("administrative")) {
+    return ["operations associate", "administrative executive", "customer support associate"];
+  }
 
   return [];
 }

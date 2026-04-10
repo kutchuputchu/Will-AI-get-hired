@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+import { analyzeResumeWithAI } from "@/lib/ai";
 import { matchJobsWithAI } from "@/lib/job-match-ai";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { JobListing } from "@/types";
@@ -20,33 +21,81 @@ export async function POST(request: Request) {
       );
     }
 
+    const structuredResume = await analyzeResumeWithAI(resumeText);
+
     const matches = await matchJobsWithAI({
       resumeText,
       domain: domain ?? "",
       suggestedRoles: Array.isArray(suggestedRoles) ? suggestedRoles : [],
-      jobs
+      jobs,
+      structuredResume: {
+        name: structuredResume.candidate.fullName,
+        primary_domain: structuredResume.domain,
+        experience_level: structuredResume.experienceLevel,
+        skills: {
+          technical: structuredResume.skills,
+          tools: structuredResume.tools,
+          soft: structuredResume.softSkills
+        },
+        education: structuredResume.parsedEducation ?? structuredResume.education,
+        experience: structuredResume.parsedExperience ?? structuredResume.experience,
+        projects: structuredResume.parsedProjects ?? [],
+        certifications: structuredResume.certifications ?? [],
+        keywords_for_matching: structuredResume.skills
+      }
     });
-    const supabase = getSupabaseAdmin();
 
-    const rows = matches.map((job) => ({
+    const supabase = getSupabaseAdmin();
+    await supabase.from("job_matches").delete().eq("resume_id", resumeId);
+
+    const modernRows = matches.map((job) => ({
       resume_id: resumeId,
-      adzuna_id: job.adzunaId,
+      provider: job.domain ?? "aggregated",
+      provider_job_id: job.adzunaId,
       title: job.title,
       company: job.company,
       location: job.location,
-      description: job.description,
+      salary_min: job.salaryMin,
+      salary_max: job.salaryMax,
       apply_url: job.applyUrl,
-      required_skills: job.skills,
+      match_percentage: job.matchPercentage,
+      matched_skills: job.matchedSkills,
       missing_skills: job.missingSkills,
-      match_percentage: job.matchPercentage
+      why_match: job.explanation ?? "",
+      payload: job,
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     }));
 
-    const { error } = await supabase.from("job_matches").insert(rows);
+    const { error: modernInsertError } = await supabase.from("job_matches").insert(modernRows);
 
-    if (error) {
+    if (modernInsertError) {
+      const fallbackAttempts = [
+        modernRows.map(({ expires_at: _expiresAt, ...rest }) => rest),
+        matches.map((job) => ({
+          resume_id: resumeId,
+          adzuna_id: job.adzunaId,
+          title: job.title,
+          company: job.company,
+          location: job.location,
+          description: job.description,
+          apply_url: job.applyUrl,
+          required_skills: job.skills,
+          missing_skills: job.missingSkills,
+          match_percentage: job.matchPercentage
+        }))
+      ];
+
+      for (const rows of fallbackAttempts) {
+        const { error: retryError } = await supabase.from("job_matches").insert(rows);
+
+        if (!retryError) {
+          return NextResponse.json(matches);
+        }
+      }
+
       return NextResponse.json(
         {
-          error: `Database insert failed for table "job_matches": ${error.message}`
+          error: `Database insert failed for table "job_matches": ${modernInsertError.message}`
         },
         { status: 500 }
       );

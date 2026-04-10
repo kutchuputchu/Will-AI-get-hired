@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { analyzeResumeWithAI } from "@/lib/ai";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
@@ -12,19 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "resumeId and text are required." }, { status: 400 });
     }
 
-    let analysis;
-
-    try {
-      analysis = await analyzeResumeWithAI(text);
-    } catch (error) {
-      return NextResponse.json(
-        {
-          error: `AI analysis failed: ${error instanceof Error ? error.message : "Unknown AI error."}`
-        },
-        { status: 500 }
-      );
-    }
-
+    const analysis = await analyzeResumeWithAI(text);
     const supabase = getSupabaseAdmin();
 
     const { error: updateError } = await supabase
@@ -41,22 +29,34 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error: insertError } = await supabase.from("resume_analyses").insert({
+    await supabase.from("parsed_resumes").upsert({
       resume_id: resumeId,
+      file_name: `${analysis.candidate.fullName || "candidate"}.pdf`,
+      raw_text: text,
+      parsed_payload: analysis
+    });
+
+    const { error: analysisError } = await supabase.from("resume_analyses").upsert({
+      resume_id: resumeId,
+      domain: analysis.domain,
+      domain_confidence: analysis.domainConfidence ?? 0,
       summary: analysis.summary,
       skills: analysis.skills,
-      experience_level: analysis.experienceLevel,
+      experience: analysis.experience,
+      education: analysis.education,
       missing_skills: analysis.missingSkills,
       resume_score: analysis.resumeScore
     });
 
-    if (insertError) {
-      return NextResponse.json(
-        {
-          error: `Database insert failed for table "resume_analyses": ${insertError.message}`
-        },
-        { status: 500 }
-      );
+    if (analysisError) {
+      await supabase.from("resume_analyses").insert({
+        resume_id: resumeId,
+        summary: analysis.summary,
+        skills: analysis.skills,
+        experience_level: analysis.experienceLevel,
+        missing_skills: analysis.missingSkills,
+        resume_score: analysis.resumeScore
+      });
     }
 
     return NextResponse.json(analysis);
